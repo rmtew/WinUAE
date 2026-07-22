@@ -163,6 +163,9 @@ HINSTANCE hInst = NULL;
 HMODULE hUIDLL = NULL;
 
 HWND hHiddenWnd, hGUIWnd;
+// Set before host initialization when the command line explicitly requests the
+// no-window backend. Configuration files are parsed later than this phase.
+static bool headless_command_line;
 #if KBHOOK
 static HHOOK hhook;
 #endif
@@ -3511,14 +3514,16 @@ static int WIN32_RegisterClasses (void)
 	if (!RegisterClass (&wc))
 		return 0;
 
-	hHiddenWnd = CreateWindowEx (0,
-		_T("Useless"), _T("You don't see me"),
-		WS_POPUP,
-		0, 0,
-		1, 1,
-		NULL, NULL, 0, NULL);
-	if (!hHiddenWnd)
-		return 0;
+	if (!headless_command_line) {
+		hHiddenWnd = CreateWindowEx (0,
+			_T("Useless"), _T("You don't see me"),
+			WS_POPUP,
+			0, 0,
+			1, 1,
+			NULL, NULL, 0, NULL);
+		if (!hHiddenWnd)
+			return 0;
+	}
 
 	return 1;
 }
@@ -4398,6 +4403,12 @@ void target_quit (void)
 
 void target_fixup_options (struct uae_prefs *p)
 {
+	// Command-line headless mode is detected before configuration loading so
+	// startup can avoid creating a host window. Preserve that choice through
+	// the later target fixup pass as well.
+	if (headless_command_line)
+		p->headless = true;
+
 	if (p->win32_automount_cddrives && !p->scsi)
 		p->scsi = 1;
 	if (p->win32_uaescsimode > UAESCSI_LAST)
@@ -4429,22 +4440,24 @@ void target_fixup_options (struct uae_prefs *p)
 		p->rtg_hardwaresprite = false;
 	}
 
-	struct MultiDisplay *md = getdisplay(p, 0);
-	for (int j = 0; j < MAX_AMIGADISPLAYS; j++) {
-		if (p->gfx_monitor[j].gfx_size_fs.special == WH_NATIVE) {
-			int i;
-			for (i = 0; md->DisplayModes[i].inuse; i++) {
-				if (md->DisplayModes[i].res.width == md->rect.right - md->rect.left &&
-					md->DisplayModes[i].res.height == md->rect.bottom - md->rect.top) {
-					p->gfx_monitor[j].gfx_size_fs.width = md->DisplayModes[i].res.width;
-					p->gfx_monitor[j].gfx_size_fs.height = md->DisplayModes[i].res.height;
-					write_log(_T("Native resolution: %dx%d\n"), p->gfx_monitor[j].gfx_size_fs.width, p->gfx_monitor[j].gfx_size_fs.height);
-					break;
+	if (!headless_command_line && !p->headless) {
+		struct MultiDisplay *md = getdisplay(p, 0);
+		for (int j = 0; j < MAX_AMIGADISPLAYS; j++) {
+			if (p->gfx_monitor[j].gfx_size_fs.special == WH_NATIVE) {
+				int i;
+				for (i = 0; md->DisplayModes[i].inuse; i++) {
+					if (md->DisplayModes[i].res.width == md->rect.right - md->rect.left &&
+						md->DisplayModes[i].res.height == md->rect.bottom - md->rect.top) {
+						p->gfx_monitor[j].gfx_size_fs.width = md->DisplayModes[i].res.width;
+						p->gfx_monitor[j].gfx_size_fs.height = md->DisplayModes[i].res.height;
+						write_log(_T("Native resolution: %dx%d\n"), p->gfx_monitor[j].gfx_size_fs.width, p->gfx_monitor[j].gfx_size_fs.height);
+						break;
+					}
 				}
-			}
-			if (!md->DisplayModes[i].inuse) {
-				p->gfx_monitor[j].gfx_size_fs.special = 0;
-				write_log(_T("Native resolution not found.\n"));
+				if (!md->DisplayModes[i].inuse) {
+					p->gfx_monitor[j].gfx_size_fs.special = 0;
+					write_log(_T("Native resolution not found.\n"));
+				}
 			}
 		}
 	}
@@ -4454,7 +4467,8 @@ void target_fixup_options (struct uae_prefs *p)
 		}
 	}
 
-	d3d_select(p);
+	if (!headless_command_line && !p->headless)
+		d3d_select(p);
 }
 
 void target_default_options (struct uae_prefs *p, int type)
@@ -7457,6 +7471,13 @@ static int PASCAL WinMain2 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR
 	argc = process_arg (lpCmdLine, argv, &argv3);
 	if (doquit)
 		return 0;
+	for (i = 0; argv[i]; i++) {
+		if (_tcscmp(argv[i], _T("-s")) == 0 && argv[i + 1]
+			&& _tcsicmp(argv[i + 1], _T("headless=yes")) == 0) {
+			headless_command_line = true;
+			break;
+		}
+	}
 
 	argv2 = WIN32_InitRegistry (argv);
 
@@ -7491,10 +7512,14 @@ static int PASCAL WinMain2 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR
 		}
 #endif
 		WIN32_HandleRegistryStuff ();
-		write_log (_T("Enumerating display devices.. \n"));
-		enumeratedisplays ();
-		write_log (_T("Sorting devices and modes..\n"));
-		sortdisplays ();
+		if (!headless_command_line) {
+			write_log (_T("Enumerating display devices.. \n"));
+			enumeratedisplays ();
+			write_log (_T("Sorting devices and modes..\n"));
+			sortdisplays ();
+		} else {
+			write_log (_T("Headless mode: display enumeration disabled.\n"));
+		}
 		enumerate_sound_devices ();
 		for (i = 0; i < MAX_SOUND_DEVICES && sound_devices[i]; i++) {
 			int type = sound_devices[i]->type;
@@ -7520,7 +7545,8 @@ static int PASCAL WinMain2 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR
 #endif
 		WIN32_InitLang ();
 		unicode_init ();
-		can_D3D11(false);
+		if (!headless_command_line)
+			can_D3D11(false);
 		if (betamessage ()) {
 			keyboard_settrans ();
 #ifdef CATWEASEL

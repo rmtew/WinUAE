@@ -1856,6 +1856,9 @@ static void update_gfxparams(struct AmigaMonitor *mon)
 
 static int open_windows(struct AmigaMonitor *mon, bool mousecapture, bool started)
 {
+	if (currprefs.headless) {
+		return 1;
+	}
 	bool recapture = false;
 	int ret;
 
@@ -2967,6 +2970,9 @@ void machdep_free(void)
 
 int graphics_init(bool mousecapture)
 {
+	if (currprefs.headless) {
+		return 1;
+	}
 	InitializeDarkMode();
 	systray (hHiddenWnd, TRUE);
 	systray (hHiddenWnd, FALSE);
@@ -3947,6 +3953,9 @@ oops:
 
 bool target_graphics_buffer_update(int monid, bool force)
 {
+	if (currprefs.headless) {
+		return false;
+	}
 	struct AmigaMonitor *mon = &AMonitors[monid];
 	struct picasso_vidbuf_description *vidinfo = &picasso_vidinfo[monid];
 	struct vidbuf_description *avidinfo = &adisplays[monid].gfxvidinfo;
