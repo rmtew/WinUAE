@@ -145,16 +145,21 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <!-- Override with /p:WinUaeDepsDir=... when using a different local dependency bundle. -->
+  <PropertyGroup>
+    <WinUaeDepsDir Condition="'$(WinUaeDepsDir)'==''">$(SolutionDir)..\..\winuae-deps</WinUaeDepsDir>
+    <WinUaeOutputDir Condition="'$(WinUaeOutputDir)'==''">$(SolutionDir)..\..\build\$(Platform)\$(Configuration)\</WinUaeOutputDir>
+  </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30128.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\Users\Chuck\Documents\Visual_Studio_Code\amiga-debug\bin\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">c:\Users\Chuck\Documents\Visual_Studio_Code\amiga-debug\bin\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(WinUaeOutputDir)</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">$(WinUaeOutputDir)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(USERPROFILE)\Documents\Visual_Studio_Code\vscode-amiga-debug\bin\win32\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Test|x64'">$(USERPROFILE)\Documents\Visual_Studio_Code\vscode-amiga-debug\bin\win32\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(WinUaeOutputDir)</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Test|x64'">$(WinUaeOutputDir)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">$(Platform)\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Test|x64'">$(Platform)\$(Configuration)\</IntDir>
@@ -167,11 +172,11 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">true</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Test|x64'">true</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Test|ARM64EC'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">c:\Users\Chuck\Documents\Visual_Studio_Code\amiga-debug\bin\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">$(WinUaeOutputDir)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">$(USERPROFILE)\Documents\Visual_Studio_Code\vscode-amiga-debug\bin\win32\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">$(WinUaeOutputDir)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">$(Platform)\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='FullRelease|ARM64EC'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">false</LinkIncremental>
@@ -184,67 +189,67 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">winuae-gdb_arm64</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Test|x64'">winuae-gdb</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Test|ARM64EC'">winuae-gdb</TargetName>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\dev\lib;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">C:\dev\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(WinUaeDepsDir)\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">$(WinUaeDepsDir)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
     <ReferencePath Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">$(VC_ReferencesPath_x86);</ReferencePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">C:\dev\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">$(WinUaeDepsDir)\lib;$(LibraryPath)</LibraryPath>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</EmbedManifest>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">true</EmbedManifest>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">true</EmbedManifest>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Test|x64'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Test|ARM64EC'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\dev\lib\x64;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">C:\dev\lib\x64;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Test|x64'">C:\dev\lib\x64;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Test|ARM64EC'">C:\dev\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='FullRelease|ARM64EC'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;c:\dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">C:\dev\lib\x64;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='FullRelease|ARM64EC'">C:\dev\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Test|x64'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Test|ARM64EC'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(WinUaeDepsDir)\lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">$(WinUaeDepsDir)\lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Test|x64'">$(WinUaeDepsDir)\lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Test|ARM64EC'">$(WinUaeDepsDir)\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='FullRelease|ARM64EC'">$(MSBuildProgramFiles32)\Windows Kits\10\Include\10.0.18362.0\km;$(WinUaeDepsDir)\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">$(WinUaeDepsDir)\lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='FullRelease|ARM64EC'">$(WinUaeDepsDir)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
     <IgnoreImportLibrary>
     </IgnoreImportLibrary>
-    <ExecutablePath>c:\dev\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(WinUaeDepsDir)\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|ARM64EC'">
     <IgnoreImportLibrary />
     <ExecutablePath>$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">
-    <ExecutablePath>c:\dev\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x86;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(WinUaeDepsDir)\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x86;$(ExecutablePath)</ExecutablePath>
     <ExcludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x86);</ExcludePath>
     <TargetName>winuae-gdb</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ExecutablePath>c:\dev\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x86;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(WinUaeDepsDir)\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x86;$(ExecutablePath)</ExecutablePath>
     <ExcludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x86);</ExcludePath>
     <TargetName>winuae-gdb</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FullRelease|Win32'">
-    <ExecutablePath>c:\dev\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x86;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(WinUaeDepsDir)\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x86;$(ExecutablePath)</ExecutablePath>
     <ExcludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x86);</ExcludePath>
     <TargetName>winuae-gdb</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FullRelease|x64'">
-    <ExecutablePath>c:\dev\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(WinUaeDepsDir)\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FullRelease|ARM64EC'">
     <ExecutablePath>$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExecutablePath>c:\dev\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(WinUaeDepsDir)\bin;$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'">
     <ExecutablePath>$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.0.17763.0\x64;$(ExecutablePath)</ExecutablePath>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <OutDir>d:\amiga\</OutDir>
+    <OutDir>$(WinUaeOutputDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -301,7 +306,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;winio.lib;setupapi.lib;wininet.lib;shlwapi.lib;libpng16.lib;lglcd.lib;openal32.lib;portaudio_x86.lib;vfw32.lib;wtsapi32.lib;enet.lib;lzmalib.lib;prowizard.lib;libFLAC_static.lib;hid.lib;zlibstat.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;softfloat.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;winio.lib;setupapi.lib;wininet.lib;shlwapi.lib;libpng16.lib;lglcd.lib;openal32.lib;portaudio_x86.lib;vfw32.lib;wtsapi32.lib;enet.lib;lzmalib.lib;prowizard.lib;libFLAC_static.lib;hid.lib;zlibstat.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(SolutionDir)\..\lib\</AdditionalLibraryDirectories>
@@ -385,7 +390,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;winio.lib;setupapi.lib;wininet.lib;shlwapi.lib;libpng16.lib;lglcd.lib;openal32.lib;portaudio_x86.lib;vfw32.lib;wtsapi32.lib;enet.lib;lzmalib.lib;prowizard.lib;libFLAC_static.lib;hid.lib;zlibstat.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;softfloat.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;winio.lib;setupapi.lib;wininet.lib;shlwapi.lib;libpng16.lib;lglcd.lib;openal32.lib;portaudio_x86.lib;vfw32.lib;wtsapi32.lib;enet.lib;lzmalib.lib;prowizard.lib;libFLAC_static.lib;hid.lib;zlibstat.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(SolutionDir)\..\lib\</AdditionalLibraryDirectories>
@@ -469,7 +474,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;softfloat.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -547,7 +552,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;softfloat.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -623,7 +628,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;softfloat.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -860,7 +865,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;softfloat.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;winmm.lib;comctl32.lib;version.lib;vfw32.lib;msacm32.lib;dsound.lib;dinput8.lib;d3d9.lib;d3dx9.lib;setupapi.lib;wininet.lib;shlwapi.lib;zlibstat.lib;portaudio_x64.lib;openal32.lib;libpng16.lib;lglcd.lib;wtsapi32.lib;enet_x64.lib;prowizard_x64.lib;lzmalib.lib;libFLAC_static.lib;hid.lib;Iphlpapi.lib;luastatic.lib;libmpeg2_ff.lib;gdiplus.lib;effects11.lib;Msimg32.lib;Dwmapi.lib;mt32emu.lib;XINPUT9_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
