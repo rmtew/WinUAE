@@ -42,6 +42,7 @@
 #define WINUAEAPPNAME _T("Arabuusimiehet.WinUAE")
 extern HMODULE hUIDLL;
 extern HWND hHiddenWnd, hGUIWnd;
+bool winuae_headless_command_line(void);
 extern int mouseactive;
 extern int minimized;
 extern int monitor_off;

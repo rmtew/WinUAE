@@ -166,6 +166,11 @@ HWND hHiddenWnd, hGUIWnd;
 // Set before host initialization when the command line explicitly requests the
 // no-window backend. Configuration files are parsed later than this phase.
 static bool headless_command_line;
+
+bool winuae_headless_command_line(void)
+{
+	return headless_command_line;
+}
 #if KBHOOK
 static HHOOK hhook;
 #endif
@@ -7778,7 +7783,7 @@ static void create_dump (struct _EXCEPTION_POINTERS *pExceptionPointers)
 					set_showcursor(TRUE);
 					if (debugfile)
 						log_close(debugfile);
-					if (isfullscreen() <= 0) {
+					if (isfullscreen() <= 0 && !winuae_headless_command_line()) {
 						all_events_disabled = 0;
 						struct AmigaMonitor *mon = &AMonitors[0];
 						_stprintf(msg, _T("Crash detected. MiniDump saved as:\n%s\n"), path3);

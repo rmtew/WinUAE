@@ -380,13 +380,13 @@ UAEREG *regcreatetree (UAEREG *root, const TCHAR *name)
 
 void regclosetree (UAEREG *key)
 {
-	if (inimode) {
+	if (!key)
+		return;
+	if (inimode && inidata) {
 		if (inidata->modified) {
 			ini_save(inidata, inipath);
 		}
 	}
-	if (!key)
-		return;
 	if (key->fkey)
 		RegCloseKey (key->fkey);
 	xfree (key->inipath);
@@ -436,7 +436,8 @@ int reginitializeinit (TCHAR **pppath)
 		goto fail;
 	return 1;
 fail:
-	regclosetree (r);
+	if (r)
+		regclosetree (r);
 	if (GetFileAttributes (path) != INVALID_FILE_ATTRIBUTES)
 		DeleteFile (path);
 	if (GetFileAttributes (path) != INVALID_FILE_ATTRIBUTES)
@@ -447,6 +448,8 @@ fail:
 		fwrite (bom, sizeof (bom), 1, f);
 		fclose (f);
 	}
+	if (inidata == NULL)
+		inidata = ini_new();
 	if (*pppath == NULL)
 		*pppath = my_strdup (path);
 	return 1;

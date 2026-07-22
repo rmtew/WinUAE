@@ -2119,9 +2119,11 @@ int scan_roms (HWND hDlg, int show)
 	if (fkey == NULL)
 		goto end;
 
-	InitializeDarkMode();
+	if (!winuae_headless_command_line()) {
+		InitializeDarkMode();
+	}
 
-	if (!rp_isactive ()) {
+	if (!winuae_headless_command_line() && !rp_isactive ()) {
 		hwnd = CustomCreateDialog(IDD_INFOBOX, hDlg, InfoBoxDialogProc, &cdstate);
 		if (!hwnd)
 			goto end;
@@ -2186,7 +2188,7 @@ end:
 	RESTORECDS;
 
 	read_rom_list(false);
-	if (show)
+	if (show && !winuae_headless_command_line())
 		show_rom_list ();
 
 	regclosetree (fkey);
@@ -24157,6 +24159,13 @@ static int fsdialog (HWND *hwnd, DWORD *flags)
 	return 0;
 }
 
+static void log_headless_message(const TCHAR *msg)
+{
+	write_log(msg);
+	if (msg[0] && msg[_tcslen(msg) - 1] != '\n')
+		write_log(_T("\n"));
+}
+
 int gui_message_multibutton (int flags, const TCHAR *format,...)
 {
 	struct AmigaMonitor *mon = &AMonitors[0];
@@ -24178,16 +24187,20 @@ int gui_message_multibutton (int flags, const TCHAR *format,...)
 	else if (flags == 2)
 		mbflags |= MB_YESNOCANCEL;
 
+	va_start (parms, format);
+	_vsntprintf (msg, sizeof msg / sizeof (TCHAR), format, parms);
+	va_end (parms);
+	if (winuae_headless_command_line()) {
+		log_headless_message(msg);
+		return 0;
+	}
+
 	flipflop = fsdialog (&hwnd, &mbflags);
 	if (!gui_active) {
 		pause_sound ();
 		if (flipflop)
 			ShowWindow(mon->hAmigaWnd, SW_MINIMIZE);
 	}
-
-	va_start (parms, format);
-	_vsntprintf (msg, sizeof msg / sizeof (TCHAR), format, parms);
-	va_end (parms);
 	write_log (msg);
 	if (msg[_tcslen (msg) - 1]!='\n')
 		write_log (_T("\n"));
@@ -24230,6 +24243,10 @@ void gui_message (const TCHAR *format,...)
 	va_start (parms, format);
 	_vsntprintf (msg, sizeof msg / sizeof (TCHAR), format, parms);
 	va_end (parms);
+	if (winuae_headless_command_line()) {
+		log_headless_message(msg);
+		return;
+	}
 
 	if (full_property_sheet) {
 		pre_gui_message (msg);
@@ -24282,6 +24299,10 @@ void pre_gui_message (const TCHAR *format,...)
 	va_start (parms, format);
 	_vsntprintf (msg, sizeof msg / sizeof (TCHAR), format, parms);
 	va_end (parms);
+	if (winuae_headless_command_line()) {
+		log_headless_message(msg);
+		return;
+	}
 	write_log (msg);
 	if (msg[_tcslen (msg) - 1] != '\n')
 		write_log (_T("\n"));
