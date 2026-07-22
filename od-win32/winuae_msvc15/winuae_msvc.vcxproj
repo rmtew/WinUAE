@@ -145,10 +145,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <!-- Override with /p:WinUaeDepsDir=... when using a different local dependency bundle. -->
+  <!-- Override with /p:WinUaeDepsDir=... or /p:WinUaeOutputDir=... when needed. -->
   <PropertyGroup>
     <WinUaeDepsDir Condition="'$(WinUaeDepsDir)'==''">$(SolutionDir)..\..\winuae-deps</WinUaeDepsDir>
-    <WinUaeOutputDir Condition="'$(WinUaeOutputDir)'==''">$(SolutionDir)..\..\build\$(Platform)\$(Configuration)\</WinUaeOutputDir>
+    <WinUaeOutputDir Condition="'$(WinUaeOutputDir)'==''">$(SolutionDir)..\..\..\..\..\ext\tools\winuae\windows-x64\</WinUaeOutputDir>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30128.1</_ProjectFileVersion>
