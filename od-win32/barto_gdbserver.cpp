@@ -751,6 +751,11 @@ namespace barto_gdbserver {
 												bpn.value1 = adr;
 												bpn.type = BREAKPOINT_REG_PC;
 												bpn.oper = BREAKPOINT_CMP_EQUAL;
+												// A disabled WinUAE slot can retain its previous hit count
+												// and breakpoint chain. Mirror instruction_breakpoint() so
+												// a new GDB breakpoint is immediately eligible to stop.
+												bpn.cnt = 0;
+												bpn.chain = -1;
 												bpn.enabled = 1;
 												trace_mode = 0;
 												print_breakpoints();
