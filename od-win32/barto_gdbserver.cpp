@@ -569,11 +569,40 @@ namespace barto_gdbserver {
 										}
 									}
 								} else if(request.substr(0, strlen("qRcmd,")) == "qRcmd,") {
-									// "monitor" command. used for profiling
+									// "monitor" commands provide the deliberately bounded controls
+									// used by the project's headless runtime scenarios.
 									auto cmd = from_hex(request.substr(strlen("qRcmd,")));
 									barto_log("GDBSERVER:   monitor %s\n", cmd.c_str());
+									static const struct {
+										const char* name;
+										int event;
+									} scenario_input_events[] = {
+										{ "port0 fire", INPUTEVENT_JOY1_FIRE_BUTTON },
+										{ "port0 left", INPUTEVENT_JOY1_LEFT },
+										{ "port0 right", INPUTEVENT_JOY1_RIGHT },
+										{ "port0 up", INPUTEVENT_JOY1_UP },
+										{ "port0 down", INPUTEVENT_JOY1_DOWN },
+										{ "port1 fire", INPUTEVENT_JOY2_FIRE_BUTTON },
+										{ "port1 left", INPUTEVENT_JOY2_LEFT },
+										{ "port1 right", INPUTEVENT_JOY2_RIGHT },
+										{ "port1 up", INPUTEVENT_JOY2_UP },
+										{ "port1 down", INPUTEVENT_JOY2_DOWN },
+									};
+									bool scenario_input_handled = false;
+									for (const auto& input_event : scenario_input_events) {
+										const std::string press = std::string("input ") + input_event.name + " press";
+										const std::string release = std::string("input ") + input_event.name + " release";
+										if (cmd == press || cmd == release) {
+											send_input_event(input_event.event, cmd == press ? 1 : 0, 1, 0);
+											response += "OK";
+											scenario_input_handled = true;
+											break;
+										}
+									}
 									// syntax: monitor profile <num_frames> <unwind_file> <out_file>
-									if(cmd.substr(0, strlen("profile")) == "profile") {
+									if (scenario_input_handled) {
+										// response already formed above.
+									} else if(cmd.substr(0, strlen("profile")) == "profile") {
 										auto s = cmd.substr(strlen("profile "));
 										std::string profile_unwindname;
 										profile_num_frames = 0;
