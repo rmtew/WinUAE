@@ -24161,7 +24161,7 @@ static int fsdialog (HWND *hwnd, DWORD *flags)
 
 static void log_headless_message(const TCHAR *msg)
 {
-	write_log(msg);
+	write_log(_T("%s"), msg);
 	if (msg[0] && msg[_tcslen(msg) - 1] != '\n')
 		write_log(_T("\n"));
 }

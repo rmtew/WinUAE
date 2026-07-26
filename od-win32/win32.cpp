@@ -6306,7 +6306,7 @@ bool get_plugin_path (TCHAR *out, int len, const TCHAR *path)
 		fixtrailing (out);
 		return true;
 	}
-	if (!_tcsicmp (path, _T("floppysounds"))) {
+	if (path != NULL && !_tcsicmp (path, _T("floppysounds"))) {
 		_tcscpy (tmp, start_path_data);
 		_tcscpy (tmp, _T("uae_data"));
 		if (isdir (tmp)) {

@@ -432,6 +432,8 @@ int reginitializeinit (TCHAR **pppath)
 	inimode = 1;
 	inipath = my_strdup (fpath);
 	inidata = ini_load(inipath, true);
+	if (inidata == NULL)
+		inidata = ini_new();
 	if (!regexists (NULL, _T("Version")))
 		goto fail;
 	return 1;
@@ -448,8 +450,6 @@ fail:
 		fwrite (bom, sizeof (bom), 1, f);
 		fclose (f);
 	}
-	if (inidata == NULL)
-		inidata = ini_new();
 	if (*pppath == NULL)
 		*pppath = my_strdup (path);
 	return 1;
