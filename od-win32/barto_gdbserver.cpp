@@ -916,6 +916,34 @@ namespace barto_gdbserver {
 										response += mem;
 									} else
 										response += "E01";
+								} else if(request[0] == 'M') { // write memory bytes
+									auto comma = request.find(',');
+									auto colon = request.find(':');
+									if(comma != std::string::npos && colon != std::string::npos && comma < colon) {
+									uaecptr adr = strtoul(request.data() + 1, nullptr, 16);
+									size_t len = strtoul(request.data() + comma + 1, nullptr, 16);
+									auto encoded = request.substr(colon + 1);
+									auto hex_value = [](char value) -> int {
+										if(value >= '0' && value <= '9') return value - '0';
+										if(value >= 'a' && value <= 'f') return value - 'a' + 10;
+										if(value >= 'A' && value <= 'F') return value - 'A' + 10;
+										return -1;
+									};
+									bool valid = encoded.size() == len * 2U;
+									for(size_t index = 0; valid && index < len; ++index) {
+										auto high = hex_value(encoded[index * 2U]);
+										auto low = hex_value(encoded[index * 2U + 1U]);
+											uaecptr address = adr + (uaecptr)index;
+											if(high < 0 || low < 0 || !debug_safe_addr(address, 1)) {
+												valid = false;
+												break;
+											}
+											get_mem_bank(address).bput(address, (uae_u8)((high << 4) | low));
+										}
+										response += valid ? "OK" : "E01";
+									} else {
+										response += "E01";
+									}
 								}
 							} else
 								barto_log("GDBSERVER: packet checksum mismatch: got %c%c, want %c%c\n", tolower(request[end + 1]), tolower(request[end + 2]), hex[cksum >> 4], hex[cksum & 0xf]);
